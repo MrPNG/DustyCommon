@@ -1,0 +1,69 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id "com.github.johnrengelman.shadow" version "1.2.4"
+    id "org.ajoberstar.grgit" version "1.7.2"
+}
+
+apply plugin: 'java'
+
+//Plugin Info
+group 'br.com.dusty.dbuilds'
+version '1.0.0'
+
+//Java Version
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+//Build timestamp String
+def timestamp() {
+    return new Date().format("yyyy-MM-dd'T'HH:mm:ssZ", TimeZone.getDefault())
+}
+
+//Get git commit id
+ext {
+    git = org.ajoberstar.grgit.Grgit.open(file('.'))
+    revision = git.head().id
+}
+
+//Always process resources
+processResources.outputs.upToDateWhen { false }
+
+//Token replacing with plugin info on 'plugin.yml'
+processResources {
+    filter ReplaceTokens, tokens: [
+            'pl.name'   : project.name,
+            'pl.group'  : project.group,
+            'pl.version': project.version + ' (Built at ' + timestamp() + ' from revision ' + revision + ')',
+            'pl.authors': 'MrPingu_'
+    ]
+}
+
+//Jar shadowing with no classifier nor version
+shadowJar {
+    classifier = null
+    version = null
+}
+
+//Copy jar to plugins folder on 'run' folder
+task copyJar(type: Copy) {
+    from shadowJar
+    into '/run/plugins/'
+}
+
+//Run Spigot server from Gradle command line
+task runServer(type: Exec) {
+    workingDir '/run/'
+    standardInput = System.in
+
+    commandLine 'cmd', '/c java -Xmx1G -jar spigot.jar'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compileOnly group: 'org.spigotmc', name: 'spigot', version: '1.12-R0.1-SNAPSHOT'
+}
