@@ -1,4 +1,4 @@
-package br.com.dusty.dbuilds.util;
+package br.com.dusty.dservices.util;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;

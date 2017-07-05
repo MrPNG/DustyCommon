@@ -1,6 +1,6 @@
-package br.com.dusty.dbuilds.update;
+package br.com.dusty.dservices.services.update;
 
-import br.com.dusty.dbuilds.Main;
+import br.com.dusty.dservices.Main;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -11,9 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
-public class PluginUpdater {
+public class UpdaterService {
 	
 	public static boolean updatePlugins() throws IOException {
 		File rootDir = Bukkit.getWorldContainer();
