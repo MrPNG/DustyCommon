@@ -1,6 +1,7 @@
 package br.com.dusty.dservices.services.shutdown;
 
 import br.com.dusty.dservices.Main;
+import br.com.dusty.dservices.util.MessageUtils;
 import br.com.dusty.dservices.util.NTPUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -35,7 +36,7 @@ public class ShutdownService {
 		long delta = calendar.getTimeInMillis() - t;
 		long ticks = Math.floorDiv(delta, 50);
 		
-		Main.LOGGER.log(Level.INFO, "[DustyBuilds] Ticks till shutdown: " + ticks);
+		Main.LOGGER.log(Level.INFO, MessageUtils.PREFIX + "Ticks till shutdown: " + ticks);
 		
 		return shutdownTask = new BukkitRunnable() {
 			@Override

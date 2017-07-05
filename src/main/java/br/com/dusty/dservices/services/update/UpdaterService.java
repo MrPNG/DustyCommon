@@ -1,6 +1,7 @@
 package br.com.dusty.dservices.services.update;
 
 import br.com.dusty.dservices.Main;
+import br.com.dusty.dservices.util.MessageUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -42,17 +43,17 @@ public class UpdaterService {
 			for(File buildFile : buildFiles){
 				if(pluginFile.getName().equals(buildFile.getName())){
 					if(!checkHash(pluginFile, buildFile)){
-						Main.LOGGER.info("[DustyBuilds] Found an update for plugin file \"" + pluginFile.getName() + "\", updating...");
+						Main.LOGGER.info(MessageUtils.PREFIX + "Found an update for plugin file \"" + pluginFile.getName() + "\", updating...");
 						
 						FileUtils.forceDelete(pluginFile);
 						FileUtils.moveFile(buildFile, pluginFile);
 						
 						updated = true;
-						Main.LOGGER.info("[DustyBuilds] Updated plugin file \"" + pluginFile.getName() + "\"");
+						Main.LOGGER.info(MessageUtils.PREFIX + "Updated plugin file \"" + pluginFile.getName() + "\"");
 					}else{
 						FileUtils.forceDelete(buildFile);
 						
-						Main.LOGGER.info("[DustyBuilds] No updates found for plugin file \"" + pluginFile.getName() + "\"");
+						Main.LOGGER.info(MessageUtils.PREFIX + "No updates found for plugin file \"" + pluginFile.getName() + "\"");
 					}
 					continue pluginFiles;
 				}

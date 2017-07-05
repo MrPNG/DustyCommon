@@ -2,6 +2,7 @@ package br.com.dusty.dservices;
 
 import br.com.dusty.dservices.services.shutdown.ShutdownService;
 import br.com.dusty.dservices.services.update.UpdaterService;
+import br.com.dusty.dservices.util.MessageUtils;
 import br.com.dusty.dservices.util.NTPUtils;
 import com.google.gson.Gson;
 import org.apache.http.HttpEntity;
@@ -38,7 +39,7 @@ public class Main extends JavaPlugin {
 		try{
 			updated = UpdaterService.updatePlugins();
 		}catch(IOException e){
-			LOGGER.log(Level.SEVERE, "[DustyBuilds] Couldn't update plugins: " + e.getMessage());
+			LOGGER.log(Level.SEVERE, MessageUtils.PREFIX + "Couldn't update plugins: " + e.getMessage());
 		}
 		if(updated)
 			Bukkit.shutdown();
