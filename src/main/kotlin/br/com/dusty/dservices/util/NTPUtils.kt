@@ -15,8 +15,8 @@ object NTPUtils {
             if (t == 0L) {
                 val inetAddress = InetAddress.getByName("a.st1.ntp.br")
 
-                val ntpudpClient = NTPUDPClient()
-                val timeInfo = ntpudpClient.getTime(inetAddress)
+                val ntpUdpClient = NTPUDPClient()
+                val timeInfo = ntpUdpClient.getTime(inetAddress)
                 t = timeInfo.returnTime
             }
             

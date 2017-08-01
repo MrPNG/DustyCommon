@@ -37,6 +37,7 @@ object UpdaterService {
                         FileUtils.moveFile(buildFile, pluginFile)
 
                         updated = true
+
                         Main.LOGGER
                                 .info(MessageUtils.PREFIX + "Updated plugin file \"" + pluginFile.name + "\"")
                     } else {
@@ -46,6 +47,7 @@ object UpdaterService {
                                 .info(MessageUtils.PREFIX + "No updates found for plugin file \"" + pluginFile
                                         .name + "\"")
                     }
+
                     continue@pluginFiles
                 }
 
