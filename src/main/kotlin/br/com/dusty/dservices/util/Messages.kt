@@ -1,6 +1,6 @@
 package br.com.dusty.dservices.util
 
-object MessageUtils {
+object Messages {
 
     val PREFIX = "[DustyServices] "
 }

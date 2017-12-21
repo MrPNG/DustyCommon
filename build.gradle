@@ -2,15 +2,24 @@ import org.ajoberstar.grgit.Grgit
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.1.3-2"
-
+    id "org.jetbrains.kotlin.jvm" version "1.2.10"
     id "com.github.johnrengelman.shadow" version "1.2.4"
     id "org.ajoberstar.grgit" version "1.7.2"
 }
 
-//Plugin Info
-group 'br.com.dusty.dservices'
-version '1.0.0'
+apply plugin: 'kotlin'
+
+//Kotlin options
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        suppressWarnings = true
+    }
+}
+
+static def timestamp() {
+    return new Date().format("yyyy-MM-dd HH:mm:ssZ", TimeZone.getDefault())
+}
 
 //Get git commit id
 ext {
@@ -18,15 +27,10 @@ ext {
     revision = git.head().getAbbreviatedId(7)
 }
 
-//Build timestamp String
-static def timestamp() {
-    return new Date().format("yyyy-MM-dd'T'HH:mm:ssZ", TimeZone.getDefault())
-}
-
-//Always process resources
+//Force resources processing
 processResources.outputs.upToDateWhen { false }
 
-//Token replacing with plugin info on 'plugin.yml'
+//Token replacing with plugin info for 'plugin.yml'
 processResources {
     filter ReplaceTokens, tokens: [
             'pl.name'   : project.name,
@@ -36,31 +40,10 @@ processResources {
     ]
 }
 
-//Kotlin options
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-//Jar shadowing with no classifier nor version
+//Jar shadowing with no classifier nor version on file name
 shadowJar {
     classifier = null
     version = null
-}
-
-//Copy jar to plugins folder on 'run' folder
-task copyJar(type: Copy) {
-    from shadowJar
-    into '/run/plugins/'
-}
-
-//Run Spigot server from Gradle command line
-task runServer(type: Exec) {
-    workingDir '/run/'
-    standardInput = System.in
-
-    commandLine 'cmd', '/c java -Xmx1G -jar spigot.jar'
 }
 
 repositories {
@@ -69,9 +52,9 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.3-2"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.2.10"
 
-    compileOnly group: 'org.spigotmc', name: 'spigot', version: '1.12-R0.1-SNAPSHOT'
+    compileOnly "org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT"
 
-    compile group: 'commons-net', name: 'commons-net', version: '3.6'
+    compile "commons-net:commons-net:3.6"
 }

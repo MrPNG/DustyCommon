@@ -1,7 +1,7 @@
 package br.com.dusty.dservices.services.update
 
 import br.com.dusty.dservices.Main
-import br.com.dusty.dservices.util.MessageUtils
+import br.com.dusty.dservices.util.Messages
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.bukkit.Bukkit
@@ -11,53 +11,34 @@ import java.util.*
 
 object UpdaterService {
 
-    fun updatePlugins(): Boolean {
-        val rootDir = Bukkit.getWorldContainer()
+	fun updatePlugins(): Boolean {
+		val rootDir = Bukkit.getWorldContainer()
 
-        val pluginsDir = File(rootDir, "plugins")
-        val buildsDir = File(rootDir, "builds")
-        buildsDir.mkdirs()
+		val pluginsDir = File(rootDir, "plugins")
+		val buildsDir = File(rootDir, "builds")
 
-        val buildFiles = buildsDir.listFiles()!!.filter { !it.isDirectory && it.name.endsWith(".jar") }
+		if (!buildsDir.exists()) buildsDir.mkdirs()
 
-        val pluginFiles = pluginsDir.listFiles()!!.filter { !it.isDirectory && it.name.endsWith(".jar") }
+		val buildFiles = buildsDir.listFiles().filter { it.name.endsWith(".jar") }
+		val pluginFiles = pluginsDir.listFiles().filter { it.name.endsWith(".jar") }
 
-        var updated = false
+		var updated = false
 
-        pluginFiles@
-        for (pluginFile in pluginFiles)
-            for (buildFile in buildFiles)
-                if (pluginFile.name == buildFile.name) {
-                    if (!checkHash(pluginFile, buildFile)) {
-                        Main.LOGGER
-                                .info(MessageUtils.PREFIX + "Found an update for plugin file \"" + pluginFile
-                                        .name + "\", updating...")
+		for (pluginFile in pluginFiles) {
+			val buildFile = buildFiles.firstOrNull { it.name == pluginFile.name && !it.matches(pluginFile) } ?: continue
 
-                        FileUtils.forceDelete(pluginFile)
-                        FileUtils.moveFile(buildFile, pluginFile)
+			Main.LOGGER.info(Messages.PREFIX + "Found an update for plugin file \"" + pluginFile.name + "\", updating...")
 
-                        updated = true
+			FileUtils.forceDelete(pluginFile)
+			FileUtils.moveFile(buildFile, pluginFile)
 
-                        Main.LOGGER
-                                .info(MessageUtils.PREFIX + "Updated plugin file \"" + pluginFile.name + "\"")
-                    } else {
-                        FileUtils.forceDelete(buildFile)
+			updated = true
 
-                        Main.LOGGER
-                                .info(MessageUtils.PREFIX + "No updates found for plugin file \"" + pluginFile
-                                        .name + "\"")
-                    }
+			Main.LOGGER.info(Messages.PREFIX + "Updated plugin file \"" + pluginFile.name + "\"")
+		}
 
-                    continue@pluginFiles
-                }
+		return updated
+	}
 
-        return updated
-    }
-
-    private fun checkHash(pluginFile: File, buildFile: File): Boolean {
-        val pluginHash = DigestUtils.md5(FileInputStream(pluginFile))
-        val buildHash = DigestUtils.md5(FileInputStream(buildFile))
-
-        return Arrays.equals(pluginHash, buildHash)
-    }
+	fun File.matches(file: File) = Arrays.equals(DigestUtils.md5(FileInputStream(this)), DigestUtils.md5(FileInputStream(file)))
 }

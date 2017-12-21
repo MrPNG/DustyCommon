@@ -1,4 +1,4 @@
-name: @pl.name@
+string: @pl.string@
 main: @pl.group@.Main
 version: @pl.version@
 authors: [@pl.authors@]
