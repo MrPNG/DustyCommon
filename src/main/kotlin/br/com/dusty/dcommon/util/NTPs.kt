@@ -1,4 +1,4 @@
-package br.com.dusty.dservices.util
+package br.com.dusty.dcommon.util
 
 import org.apache.commons.net.ntp.NTPUDPClient
 import java.net.InetAddress

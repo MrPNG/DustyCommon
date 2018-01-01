@@ -1,8 +1,8 @@
-package br.com.dusty.dservices.services.shutdown
+package br.com.dusty.dcommon.services.shutdown
 
-import br.com.dusty.dservices.Main
-import br.com.dusty.dservices.util.Messages
-import br.com.dusty.dservices.util.NTPs
+import br.com.dusty.dcommon.Main
+import br.com.dusty.dcommon.util.Messages
+import br.com.dusty.dcommon.util.NTPs
 import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask

@@ -1,7 +1,7 @@
-package br.com.dusty.dservices.services.update
+package br.com.dusty.dcommon.services.update
 
-import br.com.dusty.dservices.Main
-import br.com.dusty.dservices.util.Messages
+import br.com.dusty.dcommon.Main
+import br.com.dusty.dcommon.util.Messages
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.bukkit.Bukkit
