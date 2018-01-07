@@ -1,18 +1,28 @@
 package br.com.dusty.dcommon.gamer
 
+import br.com.dusty.dcommon.clan.Clan
 import br.com.dusty.dcommon.store.EnumAdvantage
+import br.com.dusty.dcommon.util.ItemStacks
 import br.com.dusty.dcommon.util.Tasks
 import br.com.dusty.dcommon.util.protocol.EnumProtocolVersion
+import br.com.dusty.dcommon.util.protocol.Protocols
+import br.com.dusty.dcommon.util.stdlib.clearFormatting
 import br.com.dusty.dcommon.util.text.*
+import br.com.dusty.dcommon.util.world.Worlds
+import com.comphenix.protocol.PacketType
+import com.comphenix.protocol.events.PacketContainer
+import com.comphenix.protocol.wrappers.*
 import com.sk89q.worldguard.protection.flags.DefaultFlag
 import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
 
-class SimpleGamer(override val player: Player): Gamer {
+class SimpleGamer(fromPlayer: Player, fromPrimitiveGamer: PrimitiveGamer): Gamer {
 
-	override var displayName = player.displayName
+	override var player: Player = fromPlayer
+
+	override var primitiveGamer: PrimitiveGamer = fromPrimitiveGamer
 
 	override var protocolVersion = EnumProtocolVersion.UNKNOWN
 
@@ -20,14 +30,13 @@ class SimpleGamer(override val player: Player): Gamer {
 
 	override var rank = EnumRank.NONE
 
+	override var displayName = player.displayName
+
 	override var tag = rank
 		set(value) {
 			field = value
 
-			val tag = value.format(displayName) + TextStyle.RESET
-
-			player.displayName = tag
-			player.playerListName = tag
+			refreshTag()
 		}
 
 	override var visibleTo = EnumRank.DEFAULT
@@ -77,9 +86,14 @@ class SimpleGamer(override val player: Player): Gamer {
 						if (isCombatTagged()) combatPartner!!.kill(this) else removeCombatTag(false)
 					}
 				}
-
-				//TODO: Scoreboards.update()
 			}
+		}
+
+	override var clan: Clan? = null
+		set(value) {
+			field = value
+
+			primitiveGamer.clan = if (value != null) value.uuid.toString() else ""
 		}
 
 	override var chat = if (rank.isHigherThanOrEquals(EnumRank.MOD)) EnumChat.STAFF else EnumChat.NORMAL
@@ -118,6 +132,67 @@ class SimpleGamer(override val player: Player): Gamer {
 		}
 
 	override fun hasAdvantage(advantage: EnumAdvantage) = advantage in advantages
+
+	override fun refreshTag() {
+		val tag = tag.format(displayName) + TextStyle.RESET
+
+		player.displayName = tag
+		player.playerListName = tag
+
+		updateNameAboveHead(GamerRegistry.onlineGamers())
+	}
+
+	override fun updateNameAboveHead(otherGamers: Collection<Gamer>) {
+		if (player.isOnline) {
+			var tag = tag.format(displayName)
+
+			if (tag.length > 16) tag = tag.substring(0, 16)
+
+			val ping = Protocols.ping(player)
+			val gameMode = EnumWrappers.NativeGameMode.fromBukkit(player.gameMode)
+
+			val gameProfileOld = WrappedGameProfile.fromPlayer(player)
+
+			val packetPlayOutPlayerInfoRemove = PacketContainer(PacketType.Play.Server.PLAYER_INFO).apply {
+				playerInfoAction.write(0, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER)
+				playerInfoDataLists.write(0, arrayListOf(PlayerInfoData(gameProfileOld, ping, gameMode, WrappedChatComponent.fromText(player.name))))
+			}
+
+			val gameProfileNew = WrappedGameProfile(player.uniqueId, tag).apply { properties.replaceValues("textures", gameProfileOld.properties["textures"]) }
+
+			val packetPlayOutPlayerInfoAdd = PacketContainer(PacketType.Play.Server.PLAYER_INFO).apply {
+				playerInfoAction.write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER)
+				playerInfoDataLists.write(0, arrayListOf(PlayerInfoData(gameProfileNew, ping, gameMode, WrappedChatComponent.fromText(tag))))
+			}
+
+			val packetPlayOutEntityDestroy = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY).apply {
+				integerArrays.write(0, intArrayOf(player.entityId))
+			}
+
+			val packetPlayOutNamedEntitySpawn = PacketContainer(PacketType.Play.Server.NAMED_ENTITY_SPAWN).apply {
+				integers.write(0, player.entityId)
+				uuiDs.write(0, player.uniqueId)
+				integers.write(1, (player.location.x * 32.0).toInt())
+				integers.write(2, (player.location.y * 32.0).toInt())
+				integers.write(3, (player.location.z * 32.0).toInt())
+				bytes.write(0, (player.location.yaw * 256.0 / 360.0).toByte())
+				bytes.write(1, (player.location.pitch * 256.0 / 360.0).toByte())
+				integers.write(4, 0)
+				dataWatcherModifier.write(0, WrappedDataWatcher.getEntityWatcher(player))
+			}
+
+			Protocols.PROTOCOL_MANAGER!!.run {
+				otherGamers.filter { it.player != player && it.player.canSee(player) }.forEach {
+					val otherPlayer = it.player
+
+					sendServerPacket(otherPlayer, packetPlayOutPlayerInfoRemove)
+					sendServerPacket(otherPlayer, packetPlayOutPlayerInfoAdd)
+					sendServerPacket(otherPlayer, packetPlayOutEntityDestroy)
+					sendServerPacket(otherPlayer, packetPlayOutNamedEntitySpawn)
+				}
+			}
+		}
+	}
 
 	override fun shouldSee(gamer: Gamer) = rank.isHigherThanOrEquals(gamer.visibleTo)
 
@@ -167,27 +242,27 @@ class SimpleGamer(override val player: Player): Gamer {
 
 	override fun canInteract() = mode == EnumMode.PLAY && !Worlds.REGION_MANAGER!!.getApplicableRegions(player.location).allows(DefaultFlag.INVINCIBILITY)
 
-	override fun canInteract(gamer: Gamer) = this != gamer && canUse() && gamer.mode == EnumMode.PLAY && gamer.player.canSee(player) && !Worlds.REGION_MANAGER!!.getApplicableRegions(gamer.player.location).allows(
+	override fun canInteract(gamer: Gamer) = this != gamer && canInteract() && gamer.mode == EnumMode.PLAY && gamer.player.canSee(player) && !Worlds.REGION_MANAGER!!.getApplicableRegions(gamer.player.location).allows(
 			DefaultFlag.INVINCIBILITY)
 
-	override fun kill(gamer: Gamer) {
-		val killer = gamer.player
+	override fun kill(killed: Gamer) {
+		val killedPlayer = killed.player
 
 		player.run {
 			playSound(player.location, Sound.ANVIL_LAND, 1F, 1F)
-			sendMessage(Text.POSITIVE_PREFIX + "Você ".basic() + "matou".positive() + " o jogador ".basic() + killer.displayName.clearFormatting().positive() + "!".basic())
+			sendMessage(Text.POSITIVE_PREFIX + "Você ".basic() + "matou".positive() + " o jogador ".basic() + killed.displayName.clearFormatting().positive() + "!".basic())
 		}
 
 		removeCombatTag(false)
 		combatPartner = null
 
 
-		killer.run {
+		killedPlayer.run {
 			playSound(player.location, Sound.ANVIL_LAND, 1F, 1F)
-			sendMessage(Text.NEGATIVE_PREFIX + "Você ".basic() + "foi morto".negative() + " pelo jogador ".basic() + player.displayName.clearFormatting().negative() + "!".basic())
+			sendMessage(Text.NEGATIVE_PREFIX + "Você ".basic() + "foi morto".negative() + " pelo jogador ".basic() + this@SimpleGamer.displayName.clearFormatting().negative() + "!".basic())
 		}
 
-		gamer.run {
+		killed.run {
 			removeCombatTag(false)
 			combatPartner = null
 		}
@@ -203,7 +278,7 @@ class SimpleGamer(override val player: Player): Gamer {
 			fireTicks = 0
 
 			inventory.clear()
-			//TODO: inventory.armorContents = Inventories.NO_ARMOR
+			inventory.armorContents = ItemStacks.NO_ARMOR
 
 			activePotionEffects.forEach { removePotionEffect(it.type) }
 		}

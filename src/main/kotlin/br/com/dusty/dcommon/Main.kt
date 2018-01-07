@@ -7,6 +7,7 @@ import br.com.dusty.dcommon.util.NTPs
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.IOException
+import java.util.*
 import java.util.logging.Level
 
 class Main: JavaPlugin() {
@@ -40,5 +41,7 @@ class Main: JavaPlugin() {
 		val LOGGER = Bukkit.getLogger()!!
 
 		lateinit var INSTANCE: Main
+
+		val RANDOM = Random()
 	}
 }

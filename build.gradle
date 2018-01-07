@@ -27,8 +27,8 @@ ext {
     revision = git.head().getAbbreviatedId(7)
 }
 
-//Force resources processing
-processResources.outputs.upToDateWhen { false }
+//Force resources processing only when shadowing jar
+processResources.outputs.upToDateWhen { !gradle.taskGraph.hasTask(shadowJar) }
 
 //Token replacing with plugin info for 'plugin.yml'
 processResources {

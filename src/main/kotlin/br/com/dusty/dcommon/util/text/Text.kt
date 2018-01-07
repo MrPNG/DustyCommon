@@ -1,9 +1,5 @@
 package br.com.dusty.dcommon.util.text
 
-import org.bukkit.ChatColor
-
-fun String.clearFormatting(): String = ChatColor.stripColor(this)
-
 fun String.basic() = TextColor.GRAY.toString() + this
 
 fun String.positive() = TextColor.GREEN.toString() + this

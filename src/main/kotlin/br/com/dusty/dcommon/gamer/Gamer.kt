@@ -1,5 +1,6 @@
 package br.com.dusty.dcommon.gamer
 
+import br.com.dusty.dcommon.clan.Clan
 import br.com.dusty.dcommon.store.EnumAdvantage
 import br.com.dusty.dcommon.util.protocol.EnumProtocolVersion
 import org.bukkit.entity.Player
@@ -7,13 +8,15 @@ import org.bukkit.scheduler.BukkitTask
 
 interface Gamer {
 
-	val player: Player
+	var player: Player
 
-	var displayName: String
+	var primitiveGamer: PrimitiveGamer
 
 	var protocolVersion: EnumProtocolVersion
 
 	val advantages: ArrayList<EnumAdvantage>
+
+	var displayName: String
 
 	var rank: EnumRank
 
@@ -22,6 +25,8 @@ interface Gamer {
 	var visibleTo: EnumRank
 
 	var mode: EnumMode
+
+	var clan: Clan?
 
 	var chat: EnumChat
 
@@ -42,6 +47,10 @@ interface Gamer {
 	var combatTag: Long
 
 	fun hasAdvantage(advantage: EnumAdvantage): Boolean
+
+	fun refreshTag()
+
+	fun updateNameAboveHead(otherGamers: Collection<Gamer>)
 
 	fun shouldSee(gamer: Gamer): Boolean
 
@@ -69,14 +78,9 @@ interface Gamer {
 
 	fun canInteract(gamer: Gamer): Boolean
 
-	fun kill(gamer: Gamer)
+	fun kill(killed: Gamer)
 
 	fun clear()
 
 	fun fly(fly: Boolean)
-
-	companion object {
-
-		var clazz: Class<out Gamer> = SimpleGamer::class.java
-	}
 }
