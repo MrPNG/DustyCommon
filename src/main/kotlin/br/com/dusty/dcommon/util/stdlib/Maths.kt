@@ -6,6 +6,6 @@ fun Long.millisToPeriod() = Math.round((this - System.currentTimeMillis()) / 100
 
 fun Long.millisToSeconds() = Math.round(this / 1000.0)
 
-fun Double.chances() = Main.RANDOM.nextFloat() < this
+fun Double.chances() = Main.RANDOM.nextDouble() < this
 
 fun Int.round(divider: Double) = Math.round(this / divider) * divider

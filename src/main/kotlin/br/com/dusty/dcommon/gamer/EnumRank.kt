@@ -16,9 +16,10 @@ enum class EnumRank(private val level: Int = 0, private val color: TextColor = W
 
 	NONE(-1),
 	DEFAULT(0, GRAY),
-	//	VIP(2, TextColor.GREEN),
+	VIP(2, TextColor.GREEN),
 	MVP(3, BLUE),
 	PRO(4, GOLD),
+	DUSTY(5, DARK_GREEN),
 	//	PRO_YOUTUBER(6, TextColor.AQUA),
 	YOUTUBER(6, AQUA, ITALIC),
 	MOD(8, DARK_PURPLE),

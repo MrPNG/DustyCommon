@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.command.override
 
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.Players
 import br.com.dusty.dcommon.util.text.Text
 import br.com.dusty.dcommon.util.text.basic
@@ -21,7 +21,7 @@ object TellCommand: PlayerCustomCommand(EnumRank.DEFAULT, "tell", "msg", "w", "r
 	val NOT_IN_A_CONVERSATION = Text.NEGATIVE_PREFIX + "Você ".basic() + "não".negative() + " está conversando com ".basic() + "ninguém".negative() + "!".basic()
 
 	override fun execute(sender: Player, alias: String, args: Array<String>): Boolean {
-		val gamer = GamerRegistry.gamer(sender)
+		val gamer = Gamers.gamer(sender)
 
 		when (alias) {
 			"tell", "msg", "w" -> {
@@ -33,7 +33,7 @@ object TellCommand: PlayerCustomCommand(EnumRank.DEFAULT, "tell", "msg", "w", "r
 					if (player == null) {
 						sender.sendMessage(NO_PLAYER_FOUND.format(args[0]))
 					} else {
-						val partner = GamerRegistry.gamer(player)
+						val partner = Gamers.gamer(player)
 
 						//TODO: Ignore implementation
 						gamer.chatPartner = partner
@@ -79,7 +79,7 @@ object TellCommand: PlayerCustomCommand(EnumRank.DEFAULT, "tell", "msg", "w", "r
 		return false
 	}
 
-	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = GamerRegistry.onlineGamers().filter {
+	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = Gamers.gamers().filter {
 		sender.canSee(it.player) && (args.size > 1 || it.displayName.startsWith(args[0], true))
 	}.map { it.displayName }.toMutableList()
 }

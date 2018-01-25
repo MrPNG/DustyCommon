@@ -1,13 +1,13 @@
 package br.com.dusty.dcommon.clan
 
 import br.com.dusty.dcommon.gamer.Gamer
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.stdlib.copyAndAdd
 import br.com.dusty.dcommon.util.stdlib.copyAndRemove
 import org.bukkit.Bukkit
 import java.util.*
 
-class SimpleClan(fromPrimitiveClan: PrimitiveClan): Clan {
+open class SimpleClan(fromPrimitiveClan: PrimitiveClan): Clan {
 
 	override var primitiveClan = fromPrimitiveClan
 
@@ -25,14 +25,14 @@ class SimpleClan(fromPrimitiveClan: PrimitiveClan): Clan {
 			primitiveClan.tag = value
 		}
 
-	override var leader = Bukkit.getPlayer(UUID.fromString(primitiveClan.leader))?.run { GamerRegistry.gamer(this) }
+	override var leader = Bukkit.getPlayer(UUID.fromString(primitiveClan.leader))?.run { Gamers.gamer(this) }
 		set(value) {
 			field = leader
 
 			primitiveClan.leader = if (value == null) "" else value.player.uniqueId.toString()
 		}
 
-	override var onlineMembers = primitiveClan.members.filter { it != "" }.mapNotNull { Bukkit.getPlayer(UUID.fromString(it))?.run { GamerRegistry.gamer(this) } }.toMutableList() as MutableCollection<Gamer>
+	override var onlineMembers = primitiveClan.members.filter { it != "" }.mapNotNull { Bukkit.getPlayer(UUID.fromString(it))?.run { Gamers.gamer(this) } }.toMutableList() as MutableCollection<Gamer>
 
 	override fun rawMembers() = primitiveClan.members
 

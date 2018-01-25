@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.command.staff
 
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.Players
 import br.com.dusty.dcommon.util.text.Text
 import br.com.dusty.dcommon.util.text.basic
@@ -23,13 +23,13 @@ object IpCheckCommand: PlayerCustomCommand(EnumRank.ADMIN, "ipcheck") {
 			val player = Players[args[0]]
 
 			if (player == null) sender.sendMessage(PLAYER_NOT_FOUND.format(args[0]))
-			else sender.sendMessage(PLAYER_IP.format(GamerRegistry.gamer(player).displayName, player.address.address.hostAddress))
+			else sender.sendMessage(PLAYER_IP.format(Gamers.gamer(player).displayName, player.address.address.hostAddress))
 		}
 
 		return false
 	}
 
-	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = GamerRegistry.onlineGamers().filter {
+	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = Gamers.gamers().filter {
 		sender.canSee(it.player) && (args.size > 1 || it.displayName.startsWith(args[0], true))
 	}.map { it.displayName }.toMutableList()
 }

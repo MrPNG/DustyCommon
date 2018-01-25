@@ -1,6 +1,6 @@
 package br.com.dusty.dcommon.listener.mechanics
 
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -12,7 +12,7 @@ object EntityDamageListener: Listener {
 	fun onEntityDamage(event: EntityDamageEvent) {
 		if (event.entity is Player) {
 			val player = event.entity as Player
-			val gamer = GamerRegistry.gamer(player)
+			val gamer = Gamers.gamer(player)
 
 			if (gamer.isInvincible()) event.isCancelled = true
 

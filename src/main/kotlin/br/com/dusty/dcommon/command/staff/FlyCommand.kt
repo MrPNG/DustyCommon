@@ -3,7 +3,7 @@ package br.com.dusty.dcommon.command.staff
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumMode
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.Players
 import br.com.dusty.dcommon.util.text.Text
 import br.com.dusty.dcommon.util.text.basic
@@ -21,7 +21,7 @@ object FlyCommand: PlayerCustomCommand(EnumRank.MODPLUS, "fly") {
 	val THEY_ARE_NOT_FLYING = Text.NEGATIVE_PREFIX + "Agora o jogador ".basic() + "%s".negative() + " não está mais voando!".basic()
 
 	override fun execute(sender: Player, alias: String, args: Array<String>): Boolean {
-		val gamer = GamerRegistry.gamer(sender)
+		val gamer = Gamers.gamer(sender)
 
 		when {
 			gamer.mode != EnumMode.ADMIN -> sender.sendMessage(NOT_ON_ADMIN_MODE)
@@ -41,7 +41,7 @@ object FlyCommand: PlayerCustomCommand(EnumRank.MODPLUS, "fly") {
 				} else {
 					val fly = !player.allowFlight
 
-					val otherGamer = GamerRegistry.gamer(player)
+					val otherGamer = Gamers.gamer(player)
 
 					otherGamer.fly(fly)
 
@@ -54,7 +54,7 @@ object FlyCommand: PlayerCustomCommand(EnumRank.MODPLUS, "fly") {
 		return false
 	}
 
-	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = GamerRegistry.onlineGamers().filter {
+	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = Gamers.gamers().filter {
 		sender.canSee(it.player) && (args.size > 1 || it.displayName.startsWith(args[0], true))
 	}.map { it.displayName }.toMutableList()
 }

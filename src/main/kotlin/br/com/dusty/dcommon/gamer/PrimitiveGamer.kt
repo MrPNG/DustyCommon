@@ -7,4 +7,6 @@ interface PrimitiveGamer {
 	var id: Int
 
 	var clan: String
+
+	fun toJson(): String
 }

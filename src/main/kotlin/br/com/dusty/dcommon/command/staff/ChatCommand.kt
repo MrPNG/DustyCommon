@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.command.staff
 
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.listener.mechanics.AsyncPlayerChatListener
 import br.com.dusty.dcommon.util.text.*
 import org.bukkit.Bukkit
@@ -21,7 +21,7 @@ object ChatCommand: PlayerCustomCommand(EnumRank.MODPLUS, "chat") {
 	val COMPLETIONS = arrayListOf("clear", "restrict")
 
 	override fun execute(sender: Player, alias: String, args: Array<String>): Boolean {
-		val gamer = GamerRegistry.gamer(sender)
+		val gamer = Gamers.gamer(sender)
 
 		if (args.isEmpty()) sender.sendMessage(USAGE)
 		else when (args[0].toLowerCase()) {
@@ -33,7 +33,7 @@ object ChatCommand: PlayerCustomCommand(EnumRank.MODPLUS, "chat") {
 					return false
 				}
 
-				GamerRegistry.onlineGamers().forEach { if (it.rank.isLowerThanOrEquals(rank)) it.player.sendMessage(CHAT_CLEAR_MESSAGE) }
+				Gamers.gamers().forEach { if (it.rank.isLowerThanOrEquals(rank)) it.player.sendMessage(CHAT_CLEAR_MESSAGE) }
 
 				sender.sendMessage(CHAT_CLEARED)
 			}

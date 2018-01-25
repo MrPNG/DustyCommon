@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.command.override
 
 import br.com.dusty.dcommon.command.CustomCommand
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.text.negative
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -13,8 +13,8 @@ object StopCommand: CustomCommand(EnumRank.ADMIN, "stop") {
 
 	override fun execute(sender: CommandSender, alias: String, args: Array<String>): Boolean {
 		if (testPermission(sender)) {
-			val gamers = GamerRegistry.onlineGamers().toTypedArray()
-//			val clans = ClanRegistry.onlineClans().toTypedArray()
+			val gamers = Gamers.gamers().toTypedArray()
+//			val clans = Clans.onlineClans().toTypedArray()
 
 			gamers.forEach { gamer -> gamer.player.kickPlayer(KICK_SHUTDOWN) }
 

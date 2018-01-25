@@ -1,7 +1,7 @@
 package br.com.dusty.dcommon.command
 
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
@@ -47,7 +47,7 @@ abstract class CustomCommand constructor(
 	 * caso contrário.
 	 */
 	override fun testPermission(sender: CommandSender): Boolean {
-		val b = (sender is Player && GamerRegistry.gamer(sender).rank.isHigherThanOrEquals(rank)) || sender is ConsoleCommandSender
+		val b = (sender is Player && Gamers.gamer(sender).rank.isHigherThanOrEquals(rank)) || sender is ConsoleCommandSender
 
 		if (!b) sender.sendMessage(UNKNOWN)
 

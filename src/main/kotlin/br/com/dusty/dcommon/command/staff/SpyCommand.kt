@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.command.staff
 
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.text.Text
 import br.com.dusty.dcommon.util.text.basic
 import br.com.dusty.dcommon.util.text.negative
@@ -25,7 +25,7 @@ object SpyCommand: PlayerCustomCommand(EnumRank.ADMIN, "spy") {
 
 			if (player == null) sender.sendMessage(PLAYER_NOT_FOUND.format(args[0]))
 			else {
-				val gamer = GamerRegistry.gamer(player)
+				val gamer = Gamers.gamer(player)
 
 				if (gamer.chatSpies.contains(sender)) {
 					sender.sendMessage(NOT_SPYING.format(player.name))

@@ -1,6 +1,8 @@
 package br.com.dusty.dcommon.gamer
 
 import br.com.dusty.dcommon.clan.Clan
+import br.com.dusty.dcommon.clan.Clans
+import br.com.dusty.dcommon.gamer.Gamers.primitiveGamerClass
 import br.com.dusty.dcommon.store.EnumAdvantage
 import br.com.dusty.dcommon.util.ItemStacks
 import br.com.dusty.dcommon.util.Tasks
@@ -17,18 +19,21 @@ import org.bukkit.GameMode
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
+import java.util.*
 
-class SimpleGamer(fromPlayer: Player, fromPrimitiveGamer: PrimitiveGamer): Gamer {
+open class SimpleGamer(fromPlayer: Player): Gamer {
 
 	override var player: Player = fromPlayer
 
-	override var primitiveGamer: PrimitiveGamer = fromPrimitiveGamer
-
 	override var protocolVersion = EnumProtocolVersion.UNKNOWN
+
+	override var isPremium: Boolean = false
+
+	override var isAuthenticated: Boolean = false
 
 	override val advantages = arrayListOf<EnumAdvantage>()
 
-	override var rank = EnumRank.NONE
+	override var rank = EnumRank.ADMIN //TODO: Testing with ADMIN rank
 
 	override var displayName = player.displayName
 
@@ -90,11 +95,6 @@ class SimpleGamer(fromPlayer: Player, fromPrimitiveGamer: PrimitiveGamer): Gamer
 		}
 
 	override var clan: Clan? = null
-		set(value) {
-			field = value
-
-			primitiveGamer.clan = if (value != null) value.uuid.toString() else ""
-		}
 
 	override var chat = if (rank.isHigherThanOrEquals(EnumRank.MOD)) EnumChat.STAFF else EnumChat.NORMAL
 
@@ -139,7 +139,7 @@ class SimpleGamer(fromPlayer: Player, fromPrimitiveGamer: PrimitiveGamer): Gamer
 		player.displayName = tag
 		player.playerListName = tag
 
-		updateNameAboveHead(GamerRegistry.onlineGamers())
+		updateNameAboveHead(Gamers.gamers())
 	}
 
 	override fun updateNameAboveHead(otherGamers: Collection<Gamer>) {
@@ -147,6 +147,10 @@ class SimpleGamer(fromPlayer: Player, fromPrimitiveGamer: PrimitiveGamer): Gamer
 			var tag = tag.format(displayName)
 
 			if (tag.length > 16) tag = tag.substring(0, 16)
+
+			val packetPlayOutEntityDestroy = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY).apply {
+				integerArrays.write(0, intArrayOf(player.entityId))
+			}
 
 			val ping = Protocols.ping(player)
 			val gameMode = EnumWrappers.NativeGameMode.fromBukkit(player.gameMode)
@@ -165,10 +169,6 @@ class SimpleGamer(fromPlayer: Player, fromPrimitiveGamer: PrimitiveGamer): Gamer
 				playerInfoDataLists.write(0, arrayListOf(PlayerInfoData(gameProfileNew, ping, gameMode, WrappedChatComponent.fromText(tag))))
 			}
 
-			val packetPlayOutEntityDestroy = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY).apply {
-				integerArrays.write(0, intArrayOf(player.entityId))
-			}
-
 			val packetPlayOutNamedEntitySpawn = PacketContainer(PacketType.Play.Server.NAMED_ENTITY_SPAWN).apply {
 				integers.write(0, player.entityId)
 				uuiDs.write(0, player.uniqueId)
@@ -182,22 +182,22 @@ class SimpleGamer(fromPlayer: Player, fromPrimitiveGamer: PrimitiveGamer): Gamer
 			}
 
 			Protocols.PROTOCOL_MANAGER!!.run {
-				otherGamers.filter { it.player != player && it.player.canSee(player) }.forEach {
+				otherGamers.filter { it.player != player && it.shouldSee(this@SimpleGamer) }.forEach {
 					val otherPlayer = it.player
 
+					sendServerPacket(otherPlayer, packetPlayOutEntityDestroy)
 					sendServerPacket(otherPlayer, packetPlayOutPlayerInfoRemove)
 					sendServerPacket(otherPlayer, packetPlayOutPlayerInfoAdd)
-					sendServerPacket(otherPlayer, packetPlayOutEntityDestroy)
 					sendServerPacket(otherPlayer, packetPlayOutNamedEntitySpawn)
 				}
 			}
 		}
 	}
 
-	override fun shouldSee(gamer: Gamer) = rank.isHigherThanOrEquals(gamer.visibleTo)
+	override fun shouldSee(gamer: Gamer) = /*isAuthenticated && gamer.isAuthenticated &&*/ rank.isHigherThanOrEquals(gamer.visibleTo)
 
 	override fun hidePlayers() {
-		for (otherGamer in GamerRegistry.onlineGamers()) {
+		for (otherGamer in Gamers.gamers()) {
 			val otherPlayer = otherGamer.player
 
 			if (!shouldSee(otherGamer)) player.hidePlayer(otherPlayer)
@@ -206,7 +206,7 @@ class SimpleGamer(fromPlayer: Player, fromPrimitiveGamer: PrimitiveGamer): Gamer
 	}
 
 	override fun hideFromPlayers() {
-		for (otherGamer in GamerRegistry.onlineGamers()) {
+		for (otherGamer in Gamers.gamers()) {
 			val otherPlayer = otherGamer.player
 
 			if (!otherGamer.shouldSee(this)) otherPlayer.hidePlayer(player)
@@ -291,6 +291,31 @@ class SimpleGamer(fromPlayer: Player, fromPrimitiveGamer: PrimitiveGamer): Gamer
 	override fun fly(fly: Boolean) {
 		player.allowFlight = fly
 		player.isFlying = fly
+	}
+
+	override fun fromPrimitiveGamer(primitiveGamer: PrimitiveGamer?): Gamer {
+		when {
+			primitiveGamer == null    -> return this
+			primitiveGamer.clan != "" -> Clans.clan(UUID.fromString(primitiveGamer.clan)).run {
+				if (player.uniqueId.toString() in rawMembers()) {
+					clan = this
+
+					onlineMembers.add(this@SimpleGamer)
+
+					if (primitiveClan.leader == player.uniqueId.toString()) leader = this@SimpleGamer
+				}
+			}
+		}
+
+		return this
+	}
+
+	override fun toPrimitiveGamer(): PrimitiveGamer {
+		val primitiveGamer = primitiveGamerClass.newInstance()
+		primitiveGamer.uuid = player.uniqueId.toString()
+		primitiveGamer.clan = if (clan == null) "" else clan!!.uuid.toString()
+
+		return primitiveGamer
 	}
 
 	override fun equals(other: Any?) = when {

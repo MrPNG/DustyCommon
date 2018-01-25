@@ -3,7 +3,7 @@ package br.com.dusty.dcommon.command.staff
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumMode
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.text.Text
 import br.com.dusty.dcommon.util.text.basic
 import br.com.dusty.dcommon.util.text.negative
@@ -16,7 +16,7 @@ object VisInvisCommand: PlayerCustomCommand(EnumRank.MOD, "vis", "invis") {
 	val INVISIBILITY_LIMIT = Text.NEGATIVE_PREFIX + "Você ".basic() + "somente".negative() + " pode ficar ".basic() + "invisível".negative() + " para jogadores que tenham um rank ".basic() + "menor".negative() + " do que o seu!".basic()
 
 	override fun execute(sender: Player, alias: String, args: Array<String>): Boolean {
-		val gamer = GamerRegistry.gamer(sender)
+		val gamer = Gamers.gamer(sender)
 
 		if (gamer.mode != EnumMode.ADMIN) sender.sendMessage(NOT_ON_ADMIN_MODE)
 		else when (alias) {
@@ -50,6 +50,6 @@ object VisInvisCommand: PlayerCustomCommand(EnumRank.MOD, "vis", "invis") {
 	}
 
 	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = EnumRank.values().filter {
-		it.isLowerThanOrEquals(GamerRegistry.gamer(sender).rank) && it.name.startsWith(args[0], true)
+		it.isLowerThanOrEquals(Gamers.gamer(sender).rank) && it.name.startsWith(args[0], true)
 	}.map { it.name.toLowerCase() }.toMutableList()
 }

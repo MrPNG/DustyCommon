@@ -160,6 +160,8 @@ fun Location.spawnFirework(power: Int, vararg effects: FireworkEffect) {
 object Locations {
 
 	val ORIGIN = Location(Worlds.WORLD, 0.0, 0.0, 0.0)
+
+	val SIMPLE_ORIGIN = ORIGIN.toSimpleLocation()
 }
 
 data class SimpleLocation(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0, var yaw: Float = 0F, var pitch: Float = 0F) {

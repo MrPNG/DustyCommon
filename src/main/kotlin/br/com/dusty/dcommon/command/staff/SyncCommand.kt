@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.command.staff
 
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.Tasks
 import br.com.dusty.dcommon.util.text.Text
 import br.com.dusty.dcommon.util.text.basic
@@ -20,7 +20,7 @@ object SyncCommand: PlayerCustomCommand(EnumRank.ADMIN, "sync") {
 
 	override fun execute(sender: Player, alias: String, args: Array<String>): Boolean {
 		if (args.isEmpty()) {
-			Tasks.async(Runnable { Bukkit.getLogger().info("Web API: " + WebAPI.saveProfiles(*GamerRegistry.onlineGamers().toTypedArray())) })
+			Tasks.async(Runnable { Bukkit.getLogger().info("Web API: " + WebAPI.saveProfiles(*Gamers.gamers().toTypedArray())) })
 
 			sender.sendMessage(ALL_PROFILES_SYNC)
 		} else {
@@ -28,7 +28,7 @@ object SyncCommand: PlayerCustomCommand(EnumRank.ADMIN, "sync") {
 
 			if (player == null) sender.sendMessage(PLAYER_NOT_FOUND.format(args[0]))
 			else {
-				val gamer = GamerRegistry.gamer(player)
+				val gamer = Gamers.gamer(player)
 
 				Tasks.async(Runnable { Bukkit.getLogger().info("Web API: " + WebAPI.saveProfiles(gamer)) })
 

@@ -6,7 +6,7 @@ import br.com.dusty.dcommon.clan.SimplePrimitiveClan
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumChat
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.stdlib.addUuidDashes
 import br.com.dusty.dcommon.util.stdlib.clearFormatting
 import br.com.dusty.dcommon.util.text.*
@@ -90,7 +90,7 @@ object ClanCommand: PlayerCustomCommand(EnumRank.MOD, "clan") {
 	override fun execute(sender: Player, alias: String, args: Array<String>): Boolean {
 		if (args.isEmpty()) sender.sendMessage(USAGE)
 		else {
-			val gamer = GamerRegistry.gamer(sender)
+			val gamer = Gamers.gamer(sender)
 
 			when (args[0].toLowerCase()) {
 				"help"     -> sender.sendMessage(HELP)
@@ -108,7 +108,7 @@ object ClanCommand: PlayerCustomCommand(EnumRank.MOD, "clan") {
 								tag.length > 16  -> sender.sendMessage(TAG_TOO_LONG)
 								else             -> {
 									val clan = SimpleClan(SimplePrimitiveClan().apply {
-										this.uuid = UUID.randomUUID().toString()
+										this.uuid = UUID.nameUUIDFromBytes(("Clan:" + name).toByteArray()).toString()
 										this.name = name
 										this.tag = tag
 										this.leader = sender.uniqueId.toString()
@@ -154,7 +154,7 @@ object ClanCommand: PlayerCustomCommand(EnumRank.MOD, "clan") {
 								null   -> sender.sendMessage(PLAYER_NOT_FOUND.format(args[1]))
 								sender -> sender.sendMessage(ALREADY_LEADER)
 								else   -> {
-									val invitedGamer = GamerRegistry.gamer(player)
+									val invitedGamer = Gamers.gamer(player)
 
 									when {
 										invitedGamer.clan != clan -> sender.sendMessage(NOT_IN_CLAN)
@@ -203,7 +203,7 @@ object ClanCommand: PlayerCustomCommand(EnumRank.MOD, "clan") {
 								player == sender                                                                             -> sender.sendMessage(INVITE_YOURSELF)
 								INVITATIONS[sender].any { it.player == player && it.expiresOn > System.currentTimeMillis() } -> sender.sendMessage(WAIT_INVITE)
 								else                                                                                         -> {
-									val invitedGamer = GamerRegistry.gamer(player)
+									val invitedGamer = Gamers.gamer(player)
 									val oldClan = invitedGamer.clan
 
 									when {
@@ -263,7 +263,7 @@ object ClanCommand: PlayerCustomCommand(EnumRank.MOD, "clan") {
 								}
 								sender -> sender.sendMessage(REMOVE_YOURSELF)
 								else   -> {
-									val removedGamer = GamerRegistry.gamer(player)
+									val removedGamer = Gamers.gamer(player)
 
 									if (removedGamer !in clan.onlineMembers) {
 										sender.sendMessage(NOT_IN_CLAN)

@@ -5,7 +5,7 @@ import br.com.dusty.dcommon.util.protocol.EnumProtocolVersion
 import org.bukkit.Bukkit
 import org.bukkit.scoreboard.DisplaySlot
 
-object SimpleScoreboard: Scoreboard {
+class SimpleScoreboard: Scoreboard {
 
 	override var labels = arrayOf<String>()
 

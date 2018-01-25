@@ -3,7 +3,7 @@ package br.com.dusty.dcommon.command.staff
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumMode
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.Players
 import br.com.dusty.dcommon.util.openInventory
 import br.com.dusty.dcommon.util.text.Text
@@ -19,7 +19,7 @@ object InvSeeCommand: PlayerCustomCommand(EnumRank.MOD, "invsee") {
 	val PLAYER_NOT_FOUND = Text.NEGATIVE_PREFIX + "Não".negative() + " há um jogador online com o nome ".basic() + "%s".negative() + "!".basic()
 
 	override fun execute(sender: Player, alias: String, args: Array<String>): Boolean {
-		if (GamerRegistry.gamer(sender).mode != EnumMode.ADMIN) sender.sendMessage(NOT_ON_ADMIN_MODE)
+		if (Gamers.gamer(sender).mode != EnumMode.ADMIN) sender.sendMessage(NOT_ON_ADMIN_MODE)
 		else when (args.size) {
 			0    -> {
 				sender.sendMessage(USAGE)
@@ -35,7 +35,7 @@ object InvSeeCommand: PlayerCustomCommand(EnumRank.MOD, "invsee") {
 		return false
 	}
 
-	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = GamerRegistry.onlineGamers().filter {
+	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = Gamers.gamers().filter {
 		sender.canSee(it.player) && (args.size > 1 || it.displayName.startsWith(args[0], true))
 	}.map { it.displayName }.toMutableList()
 }

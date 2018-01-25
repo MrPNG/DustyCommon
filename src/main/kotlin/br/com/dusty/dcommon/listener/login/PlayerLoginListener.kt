@@ -1,11 +1,11 @@
 package br.com.dusty.dcommon.listener.login
 
 import br.com.dusty.dcommon.Config
-import br.com.dusty.dcommon.clan.ClanRegistry
 import br.com.dusty.dcommon.gamer.EnumMode
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.store.EnumAdvantage
+import br.com.dusty.dcommon.util.protocol.Protocols
 import br.com.dusty.dcommon.util.text.TextColor
 import br.com.dusty.dcommon.util.text.basic
 import br.com.dusty.dcommon.util.text.color
@@ -13,7 +13,6 @@ import br.com.dusty.dcommon.util.text.negative
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerLoginEvent
-import java.util.*
 
 object PlayerLoginListener: Listener {
 
@@ -23,44 +22,52 @@ object PlayerLoginListener: Listener {
 
 	@EventHandler
 	fun onPlayerLogin(event: PlayerLoginEvent) {
-		val player = event.player
+		val uuid = Gamers.UUID_BY_ADDRESS.remove(event.address)
 
-		if (GamerRegistry.PRIMITIVE_GAMER_BY_UUID[player.uniqueId] == null) {
+		if (uuid == null) {
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, KICK_NOT_READY)
 
 			return
 		}
 
-		val gamer = GamerRegistry.gamer(player)
+		when {
+			uuid.toString()[14] == '4'                        -> {
+				val player = event.player
 
-		if (Config.data.serverStatus != Config.EnumServerStatus.ONLINE && gamer.rank.isLowerThan(EnumRank.MOD)) {
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, KICK_NOT_READY)
+				Protocols.changeUuid(player, uuid)
 
-			GamerRegistry.remove(player.uniqueId)
+				val primitiveGamer = Gamers.PRIMITIVE_GAMER_BY_UUID[player.uniqueId]
 
-			return
-		}
+				if (primitiveGamer == null) {
+					event.disallow(PlayerLoginEvent.Result.KICK_OTHER, KICK_NOT_READY)
 
-		if (event.result == PlayerLoginEvent.Result.KICK_FULL) {
-			if (gamer.rank.isLowerThan(EnumRank.MOD) && !gamer.hasAdvantage(EnumAdvantage.SLOT) && GamerRegistry.onlineGamers().filterNot { it.mode == EnumMode.ADMIN }.size >= Config.data.slots) {
-				event.disallow(PlayerLoginEvent.Result.KICK_FULL, KICK_FULL_MESSAGE)
+					return
+				}
 
-				GamerRegistry.remove(player.uniqueId)
+				val gamer = Gamers.gamer(player).apply {
+					isPremium = true
+					isAuthenticated = true
+				}
 
-				return
-			} else {
-				event.allow()
+				if (Config.data.serverStatus != Config.EnumServerStatus.ONLINE && gamer.rank.isLowerThan(EnumRank.MOD)) {
+					event.disallow(PlayerLoginEvent.Result.KICK_OTHER, KICK_NOT_READY)
+
+					Gamers.remove(player.uniqueId)
+
+					return
+				}
+
+				if (event.result == PlayerLoginEvent.Result.KICK_FULL) {
+					if (gamer.rank.isLowerThan(EnumRank.MOD) && !gamer.hasAdvantage(EnumAdvantage.SLOT) && Gamers.gamers().filterNot { it.mode == EnumMode.ADMIN }.size >= Config.data.slots) {
+						event.disallow(PlayerLoginEvent.Result.KICK_FULL, KICK_FULL_MESSAGE)
+
+						Gamers.remove(player.uniqueId)
+
+						return
+					} else event.allow()
+				}
 			}
-		}
-
-		if (gamer.primitiveGamer.clan != "") ClanRegistry.clan(UUID.fromString(gamer.primitiveGamer.clan)).run {
-			if (player.uniqueId.toString() in rawMembers()) {
-				gamer.clan = this
-
-				onlineMembers.add(gamer)
-
-				if (primitiveClan.leader == player.uniqueId.toString()) leader = gamer
-			} else gamer.primitiveGamer.clan = ""
+			event.result == PlayerLoginEvent.Result.KICK_FULL -> event.allow()
 		}
 	}
 }

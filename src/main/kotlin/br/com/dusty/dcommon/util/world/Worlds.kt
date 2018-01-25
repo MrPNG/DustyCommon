@@ -1,6 +1,6 @@
 package br.com.dusty.dcommon.util.world
 
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import com.sk89q.worldguard.bukkit.WGBukkit
 import com.sk89q.worldguard.protection.managers.RegionManager
 import org.apache.commons.io.FileUtils
@@ -41,7 +41,7 @@ object Worlds {
 	fun unload(name: String, rollback: Boolean): Boolean {
 		val world = Bukkit.getWorld(name) ?: return false
 
-		world.livingEntities.filter { it is Player }.forEach { GamerRegistry.gamer(it as Player).run { if (isCombatTagged()) removeCombatTag(false) } }
+		world.livingEntities.filter { it is Player }.forEach { Gamers.gamer(it as Player).run { if (isCombatTagged()) removeCombatTag(false) } }
 
 		return Bukkit.unloadWorld(world, !rollback)
 	}

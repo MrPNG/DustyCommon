@@ -1,5 +1,7 @@
 package br.com.dusty.dcommon
 
+import br.com.dusty.dcommon.command.Commands
+import br.com.dusty.dcommon.listener.Listeners
 import br.com.dusty.dcommon.services.shutdown.ShutdownService
 import br.com.dusty.dcommon.services.update.UpdaterService
 import br.com.dusty.dcommon.util.Messages
@@ -30,17 +32,18 @@ class Main: JavaPlugin() {
 		} catch (e: IOException) {
 			LOGGER.log(Level.SEVERE, Messages.PREFIX + "Couldn't get NTP time: " + e.message)
 		}
+
+		Commands.registerDefault()
+		Listeners.registerDefault()
 	}
 
-	override fun onDisable() {
-
-	}
+	override fun onDisable() {}
 
 	companion object {
 
-		val LOGGER = Bukkit.getLogger()!!
-
 		lateinit var INSTANCE: Main
+
+		val LOGGER = Bukkit.getLogger()!!
 
 		val RANDOM = Random()
 	}

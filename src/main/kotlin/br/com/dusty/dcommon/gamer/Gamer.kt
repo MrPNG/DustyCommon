@@ -10,9 +10,11 @@ interface Gamer {
 
 	var player: Player
 
-	var primitiveGamer: PrimitiveGamer
-
 	var protocolVersion: EnumProtocolVersion
+
+	var isPremium: Boolean
+
+	var isAuthenticated: Boolean
 
 	val advantages: ArrayList<EnumAdvantage>
 
@@ -83,4 +85,8 @@ interface Gamer {
 	fun clear()
 
 	fun fly(fly: Boolean)
+
+	fun fromPrimitiveGamer(primitiveGamer: PrimitiveGamer?): Gamer
+
+	fun toPrimitiveGamer(): PrimitiveGamer
 }

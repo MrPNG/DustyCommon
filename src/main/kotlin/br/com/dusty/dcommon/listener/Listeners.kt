@@ -4,43 +4,50 @@ import br.com.dusty.dcommon.Main
 import br.com.dusty.dcommon.listener.login.AsyncPlayerPreLoginListener
 import br.com.dusty.dcommon.listener.login.PlayerJoinListener
 import br.com.dusty.dcommon.listener.login.PlayerLoginListener
+import br.com.dusty.dcommon.listener.login.PlayerLoginStartListener
 import br.com.dusty.dcommon.listener.mechanics.*
 import br.com.dusty.dcommon.listener.quit.PlayerQuitListener
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
-import java.util.*
 
 object Listeners {
 
-	/**
-	 * [ArrayList] que contém todos os [Listener] a serem/já registrados pelo plugin.
-	 */
-	private val LISTENERS = hashSetOf<Listener>()
+	val LISTENERS = hashSetOf<Listener>()
 
-	/**
-	 * Registra todos os [Listener] da [ArrayList] LISTENERS.
-	 */
-	fun registerAll() {
-		//Usage: LISTENERS.add(FooListener)
+	fun register(listener: Listener) {
+		LISTENERS.add(listener)
 
-		//Login
-		LISTENERS.add(AsyncPlayerPreLoginListener)
-		LISTENERS.add(PlayerJoinListener)
-		LISTENERS.add(PlayerLoginListener)
+		Bukkit.getPluginManager().registerEvents(listener, Main.INSTANCE)
+	}
 
-		//Mechanics
-		LISTENERS.add(AsyncPlayerChatListener)
-		LISTENERS.add(EntityDamageListener)
-		LISTENERS.add(InventoryClickListener)
-		LISTENERS.add(InventoryOpenListener)
-		LISTENERS.add(PlayerInteractEntityListener)
-		LISTENERS.add(PlayerMoveListener)
-		LISTENERS.add(PlayerPickupItemListener)
-		LISTENERS.add(WorldLoadListener)
+	fun registerAll(listeners: List<Listener>) {
+		listeners.forEach { register(it) }
+	}
 
-		//Quit
-		LISTENERS.add(PlayerQuitListener)
+	fun registerDefault() {
+		registerAll(arrayListOf(
+				//Login
+				AsyncPlayerPreLoginListener,
+				PlayerJoinListener,
+				PlayerLoginListener,
+				PlayerLoginStartListener,
 
-		LISTENERS.forEach { listener -> Bukkit.getPluginManager().registerEvents(listener, Main.INSTANCE) }
+				//Mechanics
+				AsyncPlayerChatListener,
+				EntityDamageListener,
+				InventoryClickListener,
+				InventoryOpenListener,
+				PlayerInteractEntityListener,
+				PlayerMoveListener,
+				PlayerPickupItemListener,
+				SignChangeListener,
+				WorldLoadListener,
+
+				//Quit
+				PlayerQuitListener))
+
+		//Packet
+//		PacketPlayOutPlayerInfoListener.registerListener()
+//		PacketPlayOutNamedEntitySpawnListener.registerListener()
 	}
 }

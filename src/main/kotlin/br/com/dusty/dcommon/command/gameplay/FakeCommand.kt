@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.command.gameplay
 
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.Tasks
 import br.com.dusty.dcommon.util.stdlib.clearFormatting
 import br.com.dusty.dcommon.util.text.Text
@@ -25,7 +25,7 @@ object FakeCommand: PlayerCustomCommand(EnumRank.YOUTUBER, "fake", "unfake") {
 	val FAIL = Text.NEGATIVE_PREFIX + "Não".negative() + " foi ".basic() + "possível".negative() + " alterar o seu ".basic() + "nick".negative() + "!".basic()
 
 	override fun execute(sender: Player, alias: String, args: Array<String>): Boolean {
-		val gamer = GamerRegistry.gamer(sender)
+		val gamer = Gamers.gamer(sender)
 
 		when (alias) {
 			"fake"   -> {
@@ -35,7 +35,7 @@ object FakeCommand: PlayerCustomCommand(EnumRank.YOUTUBER, "fake", "unfake") {
 
 					when {
 						name.length > 16 -> sender.sendMessage(NICK_TOO_LONG.format(name))
-						GamerRegistry.onlineGamers().any {
+						Gamers.gamers().any {
 							it.player.name == name || it.displayName.equals(name, true)
 						}                -> sender.sendMessage(NICK_ALREADY_EXISTS.format(name))
 						else             -> {

@@ -3,7 +3,7 @@ package br.com.dusty.dcommon.command.staff
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumChat
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.text.Text
 import br.com.dusty.dcommon.util.text.basic
 import br.com.dusty.dcommon.util.text.negative
@@ -16,7 +16,7 @@ object StaffChatCommand: PlayerCustomCommand(EnumRank.MOD, "staffchat", "sc") {
 	val EXITED_STAFF_CHAT = Text.NEGATIVE_PREFIX + "Agora você ".basic() + "não".negative() + " está mais no chat da ".basic() + "staff".negative() + "!".basic()
 
 	override fun execute(sender: Player, alias: String, args: Array<String>): Boolean {
-		val gamer = GamerRegistry.gamer(sender)
+		val gamer = Gamers.gamer(sender)
 
 		if (gamer.chat != EnumChat.STAFF) {
 			gamer.chat = EnumChat.STAFF

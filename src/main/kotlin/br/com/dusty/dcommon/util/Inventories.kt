@@ -12,6 +12,7 @@ import br.com.dusty.dcommon.util.text.positive
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.PlayerInventory
 
 fun Inventory.addItemStacks(itemStacks: Array<ItemStack?>) {
 	var i = 0
@@ -27,6 +28,12 @@ fun Inventory.fillBackground(backButton: Boolean): Inventory {
 	if (backButton) this.setItem(0, BUTTON_BACK)
 
 	return this
+}
+
+fun Inventory.hasSlot() = any { it == null }
+
+fun PlayerInventory.addItemOrDrop(itemStack: ItemStack) {
+	if (hasSlot()) addItem(itemStack) else holder.world.dropItem(holder.location, itemStack)
 }
 
 fun Player.openInventory(player: Player) {

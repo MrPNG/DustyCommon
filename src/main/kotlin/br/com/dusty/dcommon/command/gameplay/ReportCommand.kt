@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.command.gameplay
 
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.Players
 import br.com.dusty.dcommon.util.Tasks
 import br.com.dusty.dcommon.util.stdlib.clearFormatting
@@ -45,7 +45,7 @@ object ReportCommand: PlayerCustomCommand(EnumRank.DEFAULT, "dustyreport") {
 
 					val message = REPORT.format(player.name, sender.name, reason)
 
-					GamerRegistry.onlineGamers().forEach {
+					Gamers.gamers().forEach {
 						if (it.rank.isHigherThanOrEquals(EnumRank.MOD)) {
 							val staffPlayer = it.player
 
@@ -66,7 +66,7 @@ object ReportCommand: PlayerCustomCommand(EnumRank.DEFAULT, "dustyreport") {
 		return false
 	}
 
-	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = if (args.size == 1) GamerRegistry.onlineGamers().filter {
+	override fun tabComplete(sender: Player, alias: String, args: Array<String>) = if (args.size == 1) Gamers.gamers().filter {
 		sender.canSee(it.player) && it.displayName.startsWith(args[0], true)
 	}.map { it.displayName }.toMutableList()
 	else COMPLETIONS.filter { it.startsWith(args.last(), true) }.toMutableList()

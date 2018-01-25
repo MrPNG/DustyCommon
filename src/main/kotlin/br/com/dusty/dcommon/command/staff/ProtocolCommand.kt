@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.command.staff
 
 import br.com.dusty.dcommon.command.PlayerCustomCommand
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.text.Text
 import br.com.dusty.dcommon.util.text.basic
 import br.com.dusty.dcommon.util.text.negative
@@ -17,7 +17,7 @@ object ProtocolCommand: PlayerCustomCommand(EnumRank.ADMIN, "protocols") {
 		if (args.isEmpty()) {
 			val message = StringBuilder(Text.NEUTRAL_PREFIX)
 
-			for ((index, it) in GamerRegistry.onlineGamers().sortedBy { it.protocolVersion }.withIndex()) {
+			for ((index, it) in Gamers.gamers().sortedBy { it.protocolVersion }.withIndex()) {
 				val protocolVersion = it.protocolVersion
 
 				message.append((if (index == 0) "Protocols: " else ", ").basic() + it.player.name + " (" + (if (protocolVersion.min == protocolVersion.max) protocolVersion.min else (protocolVersion.min.toString() + "-" + protocolVersion.max)) + ": " + protocolVersion.toString() + ")".basic())
@@ -29,7 +29,7 @@ object ProtocolCommand: PlayerCustomCommand(EnumRank.ADMIN, "protocols") {
 
 			if (player == null) sender.sendMessage(PLAYER_NOT_FOUND.format(args[0]))
 			else {
-				val protocolVersion = GamerRegistry.gamer(player).protocolVersion
+				val protocolVersion = Gamers.gamer(player).protocolVersion
 
 				sender.sendMessage(Text.NEUTRAL_PREFIX + "Protocol: ".basic() + player.name + " (" + (if (protocolVersion.min == protocolVersion.max) protocolVersion.min else (protocolVersion.min.toString() + "-" + protocolVersion.max)) + ": " + protocolVersion.toString() + ")".basic())
 			}

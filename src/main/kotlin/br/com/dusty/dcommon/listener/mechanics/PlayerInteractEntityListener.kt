@@ -1,7 +1,7 @@
 package br.com.dusty.dcommon.listener.mechanics
 
 import br.com.dusty.dcommon.gamer.EnumMode
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.openInventory
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -16,7 +16,7 @@ object PlayerInteractEntityListener: Listener {
 			val rightClicked = event.rightClicked as Player
 
 			val player = event.player
-			val gamer = GamerRegistry.gamer(player)
+			val gamer = Gamers.gamer(player)
 
 			if (gamer.mode == EnumMode.ADMIN) player.openInventory(rightClicked)
 		}

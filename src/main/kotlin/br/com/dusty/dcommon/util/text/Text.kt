@@ -8,15 +8,19 @@ fun String.neutral() = TextColor.YELLOW.toString() + this
 
 fun String.negative() = TextColor.RED.toString() + this
 
+fun String.special() = TextColor.GOLD.toString() + this
+
 fun String.color(color: TextColor) = color.toString() + this
 
 fun String.styles(vararg styles: TextStyle) = styles.joinToString { it.toString() } + this
 
 object Text {
 
-	val POSITIVE_PREFIX = ("» ").positive()
+	val POSITIVE_PREFIX = "» ".positive()
 
 	val NEUTRAL_PREFIX = "≡ ".neutral()
 
 	val NEGATIVE_PREFIX = "» ".negative()
+
+	val SPECIAL_PREFIX = "» ".special()
 }

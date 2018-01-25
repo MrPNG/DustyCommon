@@ -1,7 +1,7 @@
 package br.com.dusty.dcommon.listener.login
 
-import br.com.dusty.dcommon.clan.ClanRegistry
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.clan.Clans
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.text.basic
 import br.com.dusty.dcommon.util.web.WebAPI
 import org.bukkit.event.EventHandler
@@ -17,17 +17,25 @@ object AsyncPlayerPreLoginListener: Listener {
 	fun onAsyncPlayerPreLogin(event: AsyncPlayerPreLoginEvent) {
 		val uuid = event.uniqueId
 
-		val primitiveGamer = GamerRegistry.primitiveGamer(WebAPI.loadProfile(uuid), uuid)
+		Gamers.UUID_BY_ADDRESS[event.address] = uuid
 
-		if (primitiveGamer == null) event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, KICK_NO_PROFILE)
-		else {
-			val clan = UUID.fromString(primitiveGamer.clan)
+		if (uuid.toString()[14] == '4') {
+			val primitiveGamer = Gamers.primitiveGamer(WebAPI.loadProfile(uuid), uuid)
 
-			if (primitiveGamer.clan != "" && clan !in ClanRegistry.PRIMITIVE_CLAN_BY_UUID) {
-				val primitiveClan = ClanRegistry.primitiveClan(WebAPI.loadClan(clan))
+			if (primitiveGamer == null) event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, KICK_NO_PROFILE)
+			else {
+				Gamers.PRIMITIVE_GAMER_BY_UUID[uuid] = primitiveGamer
 
-				if (primitiveClan == null) event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, KICK_NO_PROFILE)
-				else ClanRegistry.PRIMITIVE_CLAN_BY_UUID.put(clan, primitiveClan)
+				if (primitiveGamer.clan != "") {
+					val clan = UUID.fromString(primitiveGamer.clan)
+
+					if (clan !in Clans.PRIMITIVE_CLAN_BY_UUID) {
+						val primitiveClan = Clans.primitiveClan(WebAPI.loadClan(clan))
+
+						if (primitiveClan == null) event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, KICK_NO_PROFILE)
+						else Clans.PRIMITIVE_CLAN_BY_UUID[clan] = primitiveClan
+					}
+				}
 			}
 		}
 	}

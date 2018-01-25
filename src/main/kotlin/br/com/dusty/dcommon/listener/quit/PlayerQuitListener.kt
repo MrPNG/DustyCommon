@@ -1,9 +1,9 @@
 package br.com.dusty.dcommon.listener.quit
 
 import br.com.dusty.dcommon.Config
-import br.com.dusty.dcommon.clan.ClanRegistry
+import br.com.dusty.dcommon.clan.Clans
 import br.com.dusty.dcommon.gamer.EnumRank
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.Tasks
 import br.com.dusty.dcommon.util.stdlib.clearFormatting
 import br.com.dusty.dcommon.util.text.Text
@@ -22,9 +22,9 @@ object PlayerQuitListener: Listener {
 	@EventHandler
 	fun onPlayerQuit(event: PlayerQuitEvent) {
 		val player = event.player
-		val gamer = GamerRegistry.gamer(player)
+		val gamer = Gamers.gamer(player)
 
-		GamerRegistry.remove(player.uniqueId)?.run {
+		Gamers.remove(player.uniqueId)?.run {
 			if (isCombatTagged()) {
 				Bukkit.broadcastMessage(Text.NEGATIVE_PREFIX + displayName.negative() + " deslogou em ".basic() + "combate".negative() + "!".basic())
 
@@ -40,7 +40,7 @@ object PlayerQuitListener: Listener {
 
 				if (clan.leader == this) clan.leader = null
 
-				if (clan.onlineMembers.isEmpty()) ClanRegistry.remove(clan.uuid)?.run { if (Config.data.serverStatus != Config.EnumServerStatus.OFFLINE) WebAPI.saveClans(clan) }
+				if (clan.onlineMembers.isEmpty()) Clans.remove(clan.uuid)?.run { if (Config.data.serverStatus != Config.EnumServerStatus.OFFLINE) WebAPI.saveClans(clan) }
 			}
 
 			if (rank.isLowerThan(EnumRank.MOD)) event.quitMessage = QUIT_MESSAGE_PREFIX + displayName.clearFormatting()

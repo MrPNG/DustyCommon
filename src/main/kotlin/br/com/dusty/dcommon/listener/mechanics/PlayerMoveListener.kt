@@ -2,7 +2,7 @@ package br.com.dusty.dcommon.listener.mechanics
 
 import br.com.dusty.dcommon.Main
 import br.com.dusty.dcommon.gamer.EnumMode
-import br.com.dusty.dcommon.gamer.GamerRegistry
+import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.isWalk
 import br.com.dusty.dcommon.util.world.Worlds
 import com.sk89q.worldguard.protection.flags.DefaultFlag
@@ -17,7 +17,7 @@ object PlayerMoveListener: Listener {
 	@EventHandler
 	fun onPlayerMove(event: PlayerMoveEvent) {
 		val player = event.player
-		val gamer = GamerRegistry.gamer(player)
+		val gamer = Gamers.gamer(player)
 
 		val from = event.from
 		val to = event.to

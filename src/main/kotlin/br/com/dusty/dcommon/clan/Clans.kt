@@ -1,9 +1,11 @@
 package br.com.dusty.dcommon.clan
 
 import br.com.dusty.dcommon.Config
+import br.com.dusty.dcommon.event.ClanInstantiateEvent
+import org.bukkit.Bukkit
 import java.util.*
 
-object ClanRegistry {
+object Clans {
 
 	var clanClass: Class<out Clan> = SimpleClan::class.java
 	var primitiveClanClass: Class<out PrimitiveClan> = SimplePrimitiveClan::class.java
@@ -17,13 +19,15 @@ object ClanRegistry {
 		if (clan == null) {
 			clan = clanClass.getDeclaredConstructor(PrimitiveClan::class.java).newInstance(PRIMITIVE_CLAN_BY_UUID[uuid])
 
-			CLAN_BY_UUID.put(uuid, clan)
+			Bukkit.getPluginManager().callEvent(ClanInstantiateEvent(clan))
+
+			CLAN_BY_UUID[uuid] = clan
 		}
 
 		return clan!!
 	}
 
-	fun onlineClans() = CLAN_BY_UUID.values
+	fun clans() = CLAN_BY_UUID.values
 
 	fun primitiveClan(json: String?) = when (json) {
 		null             -> null
