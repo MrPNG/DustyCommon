@@ -15,7 +15,7 @@ import java.lang.Integer.MAX_VALUE
 enum class EnumRank(private val level: Int = 0, private val color: TextColor = WHITE, private vararg val styles: TextStyle = arrayOf()) {
 
 	NONE(-1),
-	DEFAULT(0, GRAY),
+	NORMAL(0, GRAY),
 	VIP(2, TextColor.GREEN),
 	MVP(3, BLUE),
 	PRO(4, GOLD),

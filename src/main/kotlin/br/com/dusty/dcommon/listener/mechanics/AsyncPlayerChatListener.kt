@@ -18,7 +18,7 @@ object AsyncPlayerChatListener: Listener {
 
 	val RESTRICTED = Text.NEGATIVE_PREFIX + "O chat está ".basic() + "restrito".negative() + " apenas a ".basic() + "%s".negative() + " e acima!".basic()
 
-	var rank = EnumRank.DEFAULT
+	var rank = EnumRank.NORMAL
 
 	@EventHandler
 	fun onAsyncPlayerChat(event: AsyncPlayerChatEvent) {

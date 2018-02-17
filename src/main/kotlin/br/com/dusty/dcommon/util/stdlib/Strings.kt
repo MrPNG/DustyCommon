@@ -80,11 +80,15 @@ fun ArrayList<String>.sortOut(start: String) = filter { it.startsWith(start, tru
  * @param string
  * @return [String] sem formatação.
  */
-fun String.clearFormatting(): String = ChatColor.stripColor(this)
+fun String.clearFormatting() = ChatColor.stripColor(this)
 
 fun String.addUuidDashes() = if (length == 32) replace("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})".toRegex(), "$1-$2-$3-$4-$5") else this
 
 fun String.removeUuidDashes() = if (length == 36) replace("-", "") else this
+
+fun String.forceSubstring(startIndex: Int, endIndex: Int) = if (lastIndex > endIndex) substring(startIndex, endIndex) else this
+
+fun String.toCamelCase() = split('_').joinToString(" ") { it.toLowerCase().capitalize() }
 
 object Strings {
 
@@ -96,5 +100,5 @@ object Strings {
 	 * @param length
 	 * @return
 	 */
-	fun randomString(length: Int): String = buildString { for (i in 0 until length) append(ALPHANUMERIC[Main.RANDOM.nextInt(ALPHANUMERIC.size)]) }
+	fun randomString(length: Int) = buildString { for (i in 0 until length) append(ALPHANUMERIC[Main.RANDOM.nextInt(ALPHANUMERIC.size)]) }
 }

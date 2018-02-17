@@ -6,8 +6,8 @@ import com.google.gson.JsonParser
 import org.apache.http.NameValuePair
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.entity.UrlEncodedFormEntity
-import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
 
@@ -18,9 +18,9 @@ fun HttpPost.setEntities(vararg pairs: NameValuePair) = this.apply {
 	entity = UrlEncodedFormEntity(list)
 }
 
-fun HttpGet.response() = HTTP_CLIENT.execute(this).entity?.run { EntityUtils.toString(this) }
+fun HttpRequestBase.execute() = HTTP_CLIENT.execute(this)
 
-fun HttpPost.response() = HTTP_CLIENT.execute(this).entity?.run { EntityUtils.toString(this) }
+fun HttpRequestBase.response() = HTTP_CLIENT.execute(this).entity?.run { EntityUtils.toString(this) }
 
 object HttpClients {
 

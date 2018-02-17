@@ -21,7 +21,7 @@ object VisInvisCommand: PlayerCustomCommand(EnumRank.MOD, "vis", "invis") {
 		if (gamer.mode != EnumMode.ADMIN) sender.sendMessage(NOT_ON_ADMIN_MODE)
 		else when (alias) {
 			"vis"   -> when (args.size) {
-				0 -> gamer.visibleTo = EnumRank.DEFAULT
+				0 -> gamer.visibleTo = EnumRank.NORMAL
 				1 -> {
 					val rank = EnumRank[args[0]]
 

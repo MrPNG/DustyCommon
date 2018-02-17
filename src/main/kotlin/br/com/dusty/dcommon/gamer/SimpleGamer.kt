@@ -23,7 +23,7 @@ import java.util.*
 
 open class SimpleGamer(fromPlayer: Player): Gamer {
 
-	override var player: Player = fromPlayer
+	final override var player: Player = fromPlayer
 
 	override var protocolVersion = EnumProtocolVersion.UNKNOWN
 
@@ -33,7 +33,7 @@ open class SimpleGamer(fromPlayer: Player): Gamer {
 
 	override val advantages = arrayListOf<EnumAdvantage>()
 
-	override var rank = EnumRank.ADMIN //TODO: Testing with ADMIN rank
+	override var rank = EnumRank.ADMIN //TODO: EnumRank.values().firstOrNull { player.hasPermission("dcommon.rank." + it.name) } ?: EnumRank.NORMAL
 
 	override var displayName = player.displayName
 
@@ -44,7 +44,7 @@ open class SimpleGamer(fromPlayer: Player): Gamer {
 			refreshTag()
 		}
 
-	override var visibleTo = EnumRank.DEFAULT
+	override var visibleTo = EnumRank.NORMAL
 		set(visibleTo) {
 			if (field == visibleTo) player.sendMessage(Text.NEUTRAL_PREFIX + "Você já está ".basic() + "visível".neutral() + " apenas para ".basic() + visibleTo.toString() + (if (visibleTo.hasNext()) " e acima!".basic() else "!"))
 			else {
@@ -70,7 +70,7 @@ open class SimpleGamer(fromPlayer: Player): Gamer {
 						clear()
 						fly(false)
 
-						visibleTo = EnumRank.DEFAULT
+						visibleTo = EnumRank.NORMAL
 					}
 				//TODO: Spectator mode
 					EnumMode.SPECTATE -> {

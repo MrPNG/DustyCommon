@@ -2,16 +2,27 @@ package br.com.dusty.dcommon.util.world
 
 import br.com.dusty.dcommon.Main
 import br.com.dusty.dcommon.util.stdlib.round
+import br.com.dusty.dcommon.util.world.EnumDirection.*
+import org.bukkit.Bukkit
 import org.bukkit.FireworkEffect
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.World
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
 
-fun Location.toSimpleLocation() = SimpleLocation(x, y, z, yaw, pitch)
+fun Location.toSimpleLocation() = SimpleLocation(world.name, x, y, z, yaw, pitch)
 
 fun Location.normalize() = Location(world, Math.floor(x) + 0.5, Math.floor(y) + 0.5, Math.floor(z) + 0.5, yaw.toInt().round(90.0).toFloat(), pitch.toInt().round(90.0).toFloat())
+
+fun Location.relativePosition(center: Location) = if (z >= center.z) {
+	if (x >= center.x) SOUTHEAST
+	else SOUTHWEST
+} else {
+	if (x >= center.x) NORTHEAST
+	else NORTHWEST
+}
+
+fun Location.intDistance(location: Location) = distance(location).toInt()
 
 fun Location.spread(radius: Double): Location {
 	if (radius == 0.0) return this
@@ -164,7 +175,32 @@ object Locations {
 	val SIMPLE_ORIGIN = ORIGIN.toSimpleLocation()
 }
 
-data class SimpleLocation(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0, var yaw: Float = 0F, var pitch: Float = 0F) {
+open class SimpleLocation(var world: String = "world", var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0, var yaw: Float = 0F, var pitch: Float = 0F) {
 
-	fun toLocation(world: World) = Location(world, x, y, z, yaw, pitch)
+	fun fromLocation(location: Location) = apply {
+		world = location.world.name
+		x = location.x
+		y = location.y
+		z = location.z
+		pitch = location.pitch
+		yaw = location.yaw
+	}
+
+	fun toLocation() = Location(Bukkit.getWorld(world), x, y, z, yaw, pitch)
+}
+
+enum class EnumDirection(val string: String) {
+
+	NONE("none"),
+	CENTER("centro"),
+	SOUTH("sul"),
+	EAST("leste"),
+	NORTH("norte"),
+	WEST("oeste"),
+	SOUTHEAST("sudeste"),
+	NORTHEAST("nordeste"),
+	SOUTHWEST("sudoeste"),
+	NORTHWEST("noroeste");
+
+	override fun toString() = string
 }

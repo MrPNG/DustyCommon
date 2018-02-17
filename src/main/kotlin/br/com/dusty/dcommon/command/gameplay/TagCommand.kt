@@ -6,7 +6,7 @@ import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.text.*
 import org.bukkit.entity.Player
 
-object TagCommand: PlayerCustomCommand(EnumRank.DEFAULT, "tag") {
+object TagCommand: PlayerCustomCommand(EnumRank.NORMAL, "tag") {
 
 	val USAGE = Text.NEGATIVE_PREFIX + "Uso: /tag ".basic() + "<tag>".negative()
 

@@ -13,6 +13,6 @@ object PlayerPickupItemListener: Listener {
 		val player = event.player
 		val gamer = Gamers.gamer(player)
 
-		if (gamer.visibleTo != EnumRank.DEFAULT) event.isCancelled = true
+		if (gamer.visibleTo != EnumRank.NORMAL) event.isCancelled = true
 	}
 }

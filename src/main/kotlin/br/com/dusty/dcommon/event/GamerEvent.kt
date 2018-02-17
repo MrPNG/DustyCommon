@@ -8,11 +8,7 @@ open class GamerEvent(val gamer: Gamer): PlayerEvent(gamer.player) {
 
 	private val handlers = HandlerList()
 
-	override fun getHandlers(): HandlerList {
-		return handlers
-	}
+	override fun getHandlers() = handlers
 
-	fun getHandlerList(): HandlerList {
-		return handlers
-	}
+	fun getHandlerList() = handlers
 }

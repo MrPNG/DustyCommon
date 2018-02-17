@@ -9,19 +9,28 @@ import br.com.dusty.dcommon.listener.mechanics.*
 import br.com.dusty.dcommon.listener.quit.PlayerQuitListener
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
+import org.bukkit.plugin.java.JavaPlugin
 
 object Listeners {
 
 	val LISTENERS = hashSetOf<Listener>()
 
-	fun register(listener: Listener) {
+	fun register(listener: Listener, plugin: JavaPlugin) {
 		LISTENERS.add(listener)
 
-		Bukkit.getPluginManager().registerEvents(listener, Main.INSTANCE)
+		Bukkit.getPluginManager().registerEvents(listener, plugin)
+	}
+
+	fun register(listener: Listener) {
+		register(listener, Main.INSTANCE)
+	}
+
+	fun registerAll(listeners: List<Listener>, plugin: JavaPlugin) {
+		listeners.forEach { register(it, plugin) }
 	}
 
 	fun registerAll(listeners: List<Listener>) {
-		listeners.forEach { register(it) }
+		registerAll(listeners, Main.INSTANCE)
 	}
 
 	fun registerDefault() {
@@ -34,6 +43,7 @@ object Listeners {
 
 				//Mechanics
 				AsyncPlayerChatListener,
+				EntityDamageByEntityListener,
 				EntityDamageListener,
 				InventoryClickListener,
 				InventoryOpenListener,

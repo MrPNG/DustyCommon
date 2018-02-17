@@ -1,5 +1,6 @@
 package br.com.dusty.dcommon.listener.mechanics
 
+import br.com.dusty.dcommon.menu.Menu
 import org.bukkit.Material.INK_SACK
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -10,6 +11,16 @@ object InventoryClickListener: Listener {
 
 	@EventHandler
 	fun onInventoryClick(event: InventoryClickEvent) {
-		if (event.inventory.type == ENCHANTING && event.currentItem?.type == INK_SACK) event.isCancelled = true
+		event.run {
+			when {
+				clickedInventory is Menu                                      -> {
+					(clickedInventory as Menu).onClick(action, click, currentItem, slot, slotType, hotbarButton)
+
+					isCancelled = true
+				}
+				inventory is Menu                                             -> isCancelled = true
+				inventory.type == ENCHANTING && currentItem?.type == INK_SACK -> isCancelled = true
+			}
+		}
 	}
 }

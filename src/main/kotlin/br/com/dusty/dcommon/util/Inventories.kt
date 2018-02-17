@@ -36,6 +36,12 @@ fun PlayerInventory.addItemOrDrop(itemStack: ItemStack) {
 	if (hasSlot()) addItem(itemStack) else holder.world.dropItem(holder.location, itemStack)
 }
 
+fun PlayerInventory.addItemsOrDrop(vararg itemStacks: ItemStack?) = itemStacks.forEach { if (it != null) addItemOrDrop(it) }
+
+fun Inventory.isEmpty() = firstOrNull { it != null } == null
+
+fun PlayerInventory.isEmpty() = armorContents.firstOrNull { it != null } == null && (this as Inventory).isEmpty()
+
 fun Player.openInventory(player: Player) {
 	openInventory(player.inventory)
 	sendMessage(Text.POSITIVE_PREFIX + "Você está ".basic() + "vendo".positive() + " o inventário de ".basic() + player.name.positive())

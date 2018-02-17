@@ -9,7 +9,7 @@ import br.com.dusty.dcommon.util.text.basic
 import br.com.dusty.dcommon.util.text.negative
 import org.bukkit.entity.Player
 
-object TellCommand: PlayerCustomCommand(EnumRank.DEFAULT, "tell", "msg", "w", "r") {
+object TellCommand: PlayerCustomCommand(EnumRank.NORMAL, "tell", "msg", "w", "r") {
 
 	val USAGE_TELL = Text.NEGATIVE_PREFIX + "Uso: /%s ".basic() + "<jogador> <mensagem>".negative()
 	val USAGE_RESPONSE = Text.NEGATIVE_PREFIX + "Uso: /r ".basic() + "<mensagem>".negative()

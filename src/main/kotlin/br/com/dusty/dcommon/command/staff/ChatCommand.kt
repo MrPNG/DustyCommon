@@ -39,9 +39,9 @@ object ChatCommand: PlayerCustomCommand(EnumRank.MODPLUS, "chat") {
 			}
 			"restrict" -> {
 				val rank: EnumRank = when {
-					args.size > 1                                    -> EnumRank[args[1]]
-					AsyncPlayerChatListener.rank == EnumRank.DEFAULT -> gamer.rank
-					else                                             -> EnumRank.DEFAULT
+					args.size > 1                                   -> EnumRank[args[1]]
+					AsyncPlayerChatListener.rank == EnumRank.NORMAL -> gamer.rank
+					else                                            -> EnumRank.NORMAL
 				}
 
 				if (rank == EnumRank.NONE) {
@@ -51,7 +51,7 @@ object ChatCommand: PlayerCustomCommand(EnumRank.MODPLUS, "chat") {
 
 				AsyncPlayerChatListener.rank = rank
 
-				if (rank == EnumRank.DEFAULT) Bukkit.broadcastMessage(CHAT_ALL)
+				if (rank == EnumRank.NORMAL) Bukkit.broadcastMessage(CHAT_ALL)
 				else Bukkit.broadcastMessage(CHAT_SOME.format(rank.toString()))
 			}
 		}

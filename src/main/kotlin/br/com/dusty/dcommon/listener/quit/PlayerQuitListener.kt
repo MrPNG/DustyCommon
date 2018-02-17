@@ -2,6 +2,7 @@ package br.com.dusty.dcommon.listener.quit
 
 import br.com.dusty.dcommon.Config
 import br.com.dusty.dcommon.clan.Clans
+import br.com.dusty.dcommon.event.GamerCombatQuitEvent
 import br.com.dusty.dcommon.gamer.EnumRank
 import br.com.dusty.dcommon.gamer.Gamers
 import br.com.dusty.dcommon.util.Tasks
@@ -12,6 +13,7 @@ import br.com.dusty.dcommon.util.text.negative
 import br.com.dusty.dcommon.util.web.WebAPI
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 
@@ -19,7 +21,7 @@ object PlayerQuitListener: Listener {
 
 	private val QUIT_MESSAGE_PREFIX = "[".basic() + "-".negative() + "] ".basic()
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGH)
 	fun onPlayerQuit(event: PlayerQuitEvent) {
 		val player = event.player
 		val gamer = Gamers.gamer(player)
@@ -29,6 +31,8 @@ object PlayerQuitListener: Listener {
 				Bukkit.broadcastMessage(Text.NEGATIVE_PREFIX + displayName.negative() + " deslogou em ".basic() + "combate".negative() + "!".basic())
 
 				combatPartner?.kill(this)
+
+				Bukkit.getPluginManager().callEvent(GamerCombatQuitEvent(this))
 			}
 
 			if (Config.data.serverStatus != Config.EnumServerStatus.OFFLINE) Tasks.async(Runnable { WebAPI.saveProfiles(gamer) })

@@ -16,7 +16,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import java.util.*
 
-object ReportCommand: PlayerCustomCommand(EnumRank.DEFAULT, "dustyreport") {
+object ReportCommand: PlayerCustomCommand(EnumRank.NORMAL, "dustyreport") {
 
 	val USAGE = Text.NEGATIVE_PREFIX + "Uso: /report ".basic() + "<jogador> <motivo>".negative()
 

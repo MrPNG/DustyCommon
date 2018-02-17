@@ -2,6 +2,7 @@ package br.com.dusty.dcommon.util.web
 
 import br.com.dusty.dcommon.clan.Clan
 import br.com.dusty.dcommon.gamer.Gamer
+import br.com.dusty.dcommon.gamer.PrimitiveGamer
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.message.BasicNameValuePair
@@ -31,6 +32,9 @@ object WebAPI {
 
 	fun saveProfiles(vararg gamers: Gamer) = HttpPost(url).setEntities(BasicNameValuePair("type", "salvarperfil"),
 	                                                                   BasicNameValuePair("data", HttpClients.GSON.toJson(gamers.map { it.toPrimitiveGamer() }))).response()
+
+	fun saveProfiles(vararg primitiveGamers: PrimitiveGamer) = HttpPost(url).setEntities(BasicNameValuePair("type", "salvarperfil"),
+	                                                                                     BasicNameValuePair("data", HttpClients.GSON.toJson(primitiveGamers))).response()
 
 	fun loadClan(uuid: UUID) = HttpGet("$url?type=team&uuid=$uuid").response()
 
